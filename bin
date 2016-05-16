@@ -1,0 +1,23 @@
+#!/bin/bash
+
+scope="yuxel"
+container="varnish4"
+
+[ -z "$VARNISH_PORT" ] && VARNISH_PORT="-p 6081:6081"
+VARNISH_CONTAINER_NAME=$container
+
+ports=$VARNISH_PORT
+
+case "$1" in
+    build)
+        docker build -t ${scope}/${container} .
+        ;;
+    run)
+        docker rm ${scope}_${VARNISH_CONTAINER_NAME}  &> /dev/null
+        docker run --rm \
+            $ports \
+            --name ${scope}_${VARNISH_CONTAINER_NAME}  -it \
+            -v `pwd`/data/:/etc/varnish \
+            ${scope}/${container} 
+        ;;
+esac
